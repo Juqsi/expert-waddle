@@ -1,0 +1,50 @@
+version: "3.8"
+
+networks:
+  db_net:
+    driver: bridge
+  api_net:
+    driver: bridge
+
+services:
+  db:
+    image: mariadb:10.6
+    environment:
+      MYSQL_ROOT_PASSWORD: ctf123
+      MYSQL_DATABASE: ctf
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db-init:/docker-entrypoint-initdb.d
+    networks:
+      - db_net
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+      - "22:22"
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ctf123
+    networks:
+      - db_net
+      - api_net
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - api_net
+
+volumes:
+  db_data:

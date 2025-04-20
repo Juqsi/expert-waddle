@@ -25,6 +25,7 @@ app = FastAPI()
 
 origins = [
     "https://localhost",
+    "http://localhost",
     HOST
 ]
 

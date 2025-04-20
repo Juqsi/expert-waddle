@@ -1,5 +1,3 @@
-version: "3.8"
-
 networks:
   db_net:
     driver: bridge

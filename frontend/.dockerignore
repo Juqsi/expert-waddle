@@ -1,0 +1,15 @@
+# node‑Module in frontend/backend ausklammern
+frontend/node_modules
+backend/node_modules
+
+# generell keine node_modules
+**/node_modules
+
+# Git‑Ordner, Logs, IDE‑Files etc.
+.git
+*.log
+.idea/
+.vscode/
+
+# Mac‑OS oder andere temporäre Dateien
+.DS_Store

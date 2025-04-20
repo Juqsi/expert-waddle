@@ -1,25 +1,17 @@
 services:
   base:
-    build:
-      context: .
-      dockerfile: challenge/Dockerfile
-    # Lasse hier den docker-User laufen, aber gebe dem Container alle Caps
-    privileged: true               # ← hier
-    user: docker
-
+    image: docker:dind
+    container_name: ctf-base
+    privileged: true
     ports:
       - "80:80"
-      - "8000:8000"
       - "22:22"
+      - "8000:8000"
+    volumes:
+      - ./:/app
+      - docker-data:/var/lib/docker
 
-    # Du kannst seccomp weiter lockern, falls Probleme bleiben:
-    security_opt:
-      - seccomp:unconfined
+    entrypoint: ["/app/challenge/start-dind.sh"]
 
-    devices:
-      - /dev/fuse:/dev/fuse
-
-    tmpfs:
-      - /sys/fs/cgroup
-      - "/run/user/1001:uid=1001,gid=1001,mode=700"
-      - "/home/docker/.local/share/docker:uid=1001,gid=1001,mode=700"
+volumes:
+  docker-data:

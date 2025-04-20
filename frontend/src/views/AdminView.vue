@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {ref, onMounted} from 'vue';
-import {useAuthStore} from '@/stores/auth';
+import {BASE_PATH, useAuthStore} from '@/stores/auth';
 import {Button} from '@/components/ui/button';
 import {
   Card,
@@ -111,8 +111,7 @@ const downloadBackup = async () => {
   downloadError.value = null;
 
   try {
-    const backupUrl = '/static/backups/plantai_backup.zip';
-
+    const backupUrl = BASE_PATH + '/backups/backup.zip';
     const response = await fetch(backupUrl, {
       method: 'GET',
       headers: {
@@ -121,25 +120,36 @@ const downloadBackup = async () => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      downloadError.value = errorData?.message || `Download failed with status: ${response.status}`;
+      const errorData = await response.json().catch(() => ({}));
+      downloadError.value = errorData?.detail || `Download failed with status: ${response.status}`;
       console.error('Download failed:', downloadError.value);
-      toast.error('Backup Failed', { description: downloadError.value ?? '' });
+      toast.error('Backup Failed', { description: downloadError.value ?? "" });
       return;
     }
 
-    window.location.href = backupUrl;
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'backup.zip';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
 
-    toast.success('Backup Download Started', { description: 'Your backup download has started.' });
+    toast.success('Backup Download Started', {
+      description: 'Your backup download has started.',
+    });
 
   } catch (error: any) {
     downloadError.value = error.message || 'An unexpected error occurred during download.';
-    console.error('Download error:', error);
-    toast.error('Backup Error', { description: downloadError.value ?? ''});
+    console.error('Download error:', downloadError.value);
+    toast.error('Backup Error', { description: downloadError.value ?? ""});
   } finally {
     isDownloading.value = false;
   }
 };
+
 
 const updateUserStats = () => {
   userStats.value.totalUsers = users.value.length;

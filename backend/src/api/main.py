@@ -5,7 +5,9 @@ import uuid
 from io import BytesIO
 
 from PIL import Image, UnidentifiedImageError
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
+from fastapi.responses import FileResponse
+
 from starlette.middleware.cors import CORSMiddleware
 
 from plantai.plant_ai import PlantClassifier
@@ -264,6 +266,21 @@ async def search_plant(plant_data: dict):
     results = run_plant_getter(plant_names)
 
     return {"results": results}
+
+@app.get("/backups/backup.zip")
+async def download_backup(authorization: str = Header(None)):
+    if authorization != "Bearer 123":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    backup_path = os.path.join(os.getcwd(), "backup.zip")
+    if not os.path.exists(backup_path):
+        raise HTTPException(status_code=404, detail="Backup not found")
+
+    return FileResponse(
+        path=backup_path,
+        filename="backup.zip",
+        media_type="application/zip"
+    )
 
 
 @app.get("/")

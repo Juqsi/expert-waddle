@@ -5,7 +5,7 @@ services:
     privileged: true
     ports:
       - "80:80"
-      - "22:22"
+      - "2222:22"
       - "8000:8000"
     volumes:
       - ./:/app

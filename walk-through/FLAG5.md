@@ -4,12 +4,11 @@
 Nutze eine im Compose freigeschaltete Lücke, um auf den Host zu entkommen und die letzte Flag zu lesen.
 
 ## Setup-Hinweis
-Der Backend-Container wurde mit privilegierten Rechten und Mounts versehen:
+Der Backend-Container hat den Docker Socket gemountet dadurch ist ein Missbrauch möglich:
 
 ```yaml
 services:
   backend:
-    privileged: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 ```

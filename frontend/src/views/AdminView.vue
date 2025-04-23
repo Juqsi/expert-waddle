@@ -21,6 +21,7 @@ import {
   TableRow
 } from "@/components/ui/table";
 import {BarChart} from "@/components/ui/chart-bar";
+import NavBar from "@/components/NavBar.vue";
 
 const data = [
   {
@@ -165,6 +166,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <NavBar />
   <div class="min-h-screen bg-gray-100 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-3xl font-semibold text-gray-800 mb-6">Admin Dashboard</h1>

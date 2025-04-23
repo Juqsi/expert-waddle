@@ -1,4 +1,6 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import {useAuthStore} from "@/stores/auth.ts";
+</script>
 
 <template>
   <nav class="relative z-10 flex justify-between items-center p-4 md:p-6">
@@ -6,6 +8,9 @@
       <h1 class="text-black text-xl font-semibold">PlantAI</h1>
     </router-link>
     <div class="flex gap-4">
+      <router-link to="/admin" v-if="useAuthStore().isAdmin">
+        <button class="text-white rounded-full px-4 py-2">Admin</button>
+      </router-link>
       <router-link to="/history">
         <button class="text-black rounded-full px-4 py-2">History</button>
       </router-link>

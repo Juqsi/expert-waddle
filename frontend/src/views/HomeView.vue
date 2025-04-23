@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import SearchBar from '@/components/SearchBar.vue'
+import {useAuthStore} from "@/stores/auth.ts";
 </script>
 <template>
   <div
@@ -13,7 +14,7 @@ import SearchBar from '@/components/SearchBar.vue'
         <h1 class="text-white text-xl font-semibold">PlantAI</h1>
       </router-link>
       <div class="flex gap-4">
-        <router-link to="/admin">
+        <router-link to="/admin" v-if="useAuthStore().isAdmin">
           <button class="text-white rounded-full px-4 py-2">Admin</button>
         </router-link>
         <router-link to="/history">

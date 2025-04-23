@@ -30,6 +30,9 @@ services:
       DATABASE_USER: root
       DATABASE_PASSWORD: ctf123
       JWT_SECRET: mothersuckermotherfucker
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - db_net
       - api_net

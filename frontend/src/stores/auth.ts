@@ -6,9 +6,9 @@ export const BASE_PATH = import.meta.env.VITE_API_BASE || ''
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    isAdmin: true,
+    isAdmin: false,
     token: null as string | null,
-    isAuthenticated: true
+    isAuthenticated:false
   }),
   actions: {
     async login(username: string, password: string) {

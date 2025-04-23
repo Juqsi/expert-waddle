@@ -2,6 +2,7 @@ import base64
 import binascii
 import os
 import uuid
+import time
 from io import BytesIO
 
 from PIL import Image, UnidentifiedImageError
@@ -12,6 +13,10 @@ from starlette.middleware.cors import CORSMiddleware
 
 from plantai.plant_ai import PlantClassifier
 from plantapi.plant_api import PlantGetter
+
+from jwt import verify_jwt_sha256
+import pymysql
+from jwt import create_jwt_sha256
 
 # Create image upload folder
 UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "classify")
@@ -41,6 +46,38 @@ app.add_middleware(
 
 classifier = PlantClassifier()
 getter = PlantGetter()
+
+def notify_admin(message: str):
+    print(f"[ADMIN NOTIFICATION]: {message}")
+
+def get_db_connection(retries=3, delay=5):
+    DB_HOST     = os.getenv("DATABASE_HOST", "localhost")
+    DB_USER     = os.getenv("DATABASE_USER", "root")
+    DB_PASSWORD = os.getenv("DATABASE_PASSWORD", "")
+    DB_NAME     = os.getenv("DATABASE_NAME", "ctf")
+
+    for attempt in range(1, retries + 1):
+        try:
+            conn = pymysql.connect(
+                host=DB_HOST,
+                user=DB_USER,
+                password=DB_PASSWORD,
+                database=DB_NAME,
+                autocommit=True,
+                cursorclass=pymysql.cursors.Cursor
+            )
+            print(f"[INFO] Datenbankverbindung erfolgreich (Versuch {attempt}/{retries})")
+            return conn
+
+        except pymysql.OperationalError as e:
+            print(f"[ERROR] Verbindung fehlgeschlagen (Versuch {attempt}/{retries}): {e}")
+            if attempt < retries:
+                time.sleep(delay)
+            else:
+                notify_admin(f"Datenbankverbindung nach {retries} Versuchen fehlgeschlagen: {e}")
+                raise
+
+db_conn = get_db_connection()
 
 
 def decode_and_save_image(image_base64: str) -> str:
@@ -269,8 +306,17 @@ async def search_plant(plant_data: dict):
 
 @app.get("/backups/backup.zip")
 async def download_backup(authorization: str = Header(None)):
-    if authorization != "Bearer 123":
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
+
+    scheme, sep, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not sep or not token:
+        raise HTTPException(status_code=401, detail="Invalid Authorization format")
+
+    payload = verify_jwt_sha256(token)
+
+    if not payload.get("admin", False):
+        raise HTTPException(status_code=401, detail="You have to be an Admin")
 
     backup_path = os.path.join(os.getcwd(), "backup.zip")
     if not os.path.exists(backup_path):
@@ -281,6 +327,45 @@ async def download_backup(authorization: str = Header(None)):
         filename="backup.zip",
         media_type="application/zip"
     )
+@app.post("/login")
+async def login(credentials: dict):
+    """
+    UNSAFE login endpoint: erlaubt SQL-Injection, um das Passwort zu umgehen.
+    Erwartet JSON { "username": "...", "password": "..." }
+    Gibt zurück: { "admin": "true"|"false", "token": "<jwt>" }
+    """
+    input_user = credentials.get("username", "")
+    input_pass = credentials.get("password", "")
+
+    # VULNERABLE: direkte String-Konkatenation
+    sql = (
+        f"SELECT username, isAdmin "
+        f"FROM user "
+        f"WHERE username = '{input_user}' AND password = '{input_pass}'"
+    )
+    try:
+        with db_conn.cursor() as cursor:
+            cursor.execute(sql)
+            row = cursor.fetchone()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"DB error: {e}")
+
+    if row is None:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    db_username, is_admin_flag = row
+
+    payload = {
+        "username": db_username,
+        "admin": bool(is_admin_flag)
+    }
+    token = create_jwt_sha256(payload)
+
+    return {
+        "admin": str(is_admin_flag).lower(),
+        "token": token
+    }
+
 
 
 @app.get("/")

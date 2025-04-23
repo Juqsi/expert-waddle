@@ -10,7 +10,7 @@ services:
     volumes:
       - ./:/app
       - docker-data:/var/lib/docker
-      - challenge/final-flag:root
+      - ./challenge/final-flag:/root
 
     entrypoint: ["/app/challenge/start-dind.sh"]
 

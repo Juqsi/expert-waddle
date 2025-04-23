@@ -20,6 +20,8 @@ services:
     build:
       context: ../backend
       dockerfile: Dockerfile
+      args:
+        DOCKER_GID: ${DOCKER_GID}
     depends_on:
       - db
     ports:
@@ -30,7 +32,7 @@ services:
       DATABASE_USER: root
       DATABASE_PASSWORD: ctf123
       JWT_SECRET: mothersuckermotherfucker
-    privileged: true
+      PLANT_API_KEY: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6InN1cGVyLWR1cGVyLW9jdG8tc3VjY290YXNoIn0.c2IYSaCDyyJUuLIINon7NEbwVTmToQpgEIKRFXZTXuk
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:

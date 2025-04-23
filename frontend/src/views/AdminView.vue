@@ -160,8 +160,8 @@ const updateUserStats = () => {
 };
 
 onMounted(() => {
-  console.log('Admin view loaded');
   updateUserStats();
+  toast.success("FLAG{admin_panel_unlocked}",{duration:10000})
 });
 </script>
 

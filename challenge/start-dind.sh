@@ -6,6 +6,7 @@ set -eux
 while [ ! -S /var/run/docker.sock ]; do sleep 0.1; done
 
 cd /app/challenge
-docker compose up -d
+export DOCKER_GID=$(stat -c '%g' /var/run/docker.sock)
+docker compose up --build
 
 exec tail -f /dev/null

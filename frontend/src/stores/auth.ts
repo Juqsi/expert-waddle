@@ -35,6 +35,7 @@ export const useAuthStore = defineStore('auth', {
         this.isAdmin = data.admin
         this.isAuthenticated = true
         toast.success('Login successfully')
+        toast.success("FLAG{sql_injection_success}",{duration:10000})
         return true
       } catch (error) {
         console.error('Login error:', error)

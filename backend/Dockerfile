@@ -2,11 +2,13 @@ FROM python:3.11-slim
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-       openssh-server bash \
+       openssh-server bash curl \
  && rm -rf /var/lib/apt/lists/* \
  && mkdir -p /var/run/sshd
 
-RUN useradd -m -d /home/admin -s /bin/bash admin \
+ARG DOCKER_GID
+RUN groupadd -g ${DOCKER_GID} docker \
+ && useradd -m -d /home/admin -s /bin/bash -G docker admin \
  && usermod -U admin
 
 RUN mkdir -p /home/admin/.ssh \
@@ -23,6 +25,12 @@ RUN sed -i \
       /etc/ssh/sshd_config \
  && echo 'MaxAuthTries 50' >> /etc/ssh/sshd_config \
  && ssh-keygen -A
+
+COPY ssh_banner.txt /etc/ssh/ssh_banner.txt
+
+RUN echo 'Banner /etc/ssh/ssh_banner.txt' >> /etc/ssh/sshd_config \
+ && sed -i 's/^#\?Banner.*/Banner \/etc\/ssh\/ssh_banner.txt/' /etc/ssh/sshd_config
+
 
 WORKDIR /app
 ENV PYTHONPATH=/app/src

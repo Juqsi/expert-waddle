@@ -1,0 +1,5 @@
+***************************************************
+*  Willkommen bei PlantAI CTF!                     *
+*  Viel Erfolg, möge dein grüner Daumen siegen!    *
+*  FLAG{ssh_key_buried_in_backup}                  *
+***************************************************

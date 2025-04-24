@@ -70,7 +70,7 @@ const users = ref([
     id: '1',
     name: 'Alice Wonderland',
     email: 'alice@example.com',
-    role: 'Admin',
+    role: 'Editor',
     createdAt: '2024-01-15'
   },
   {
@@ -90,7 +90,7 @@ const users = ref([
   {
     id: '4',
     name: 'Diana Prince',
-    email: 'diana@example.com',
+    email: 'admin@example.com',
     role: 'Admin',
     createdAt: '2024-04-01'
   },
@@ -167,7 +167,7 @@ onMounted(() => {
 
 <template>
   <NavBar />
-  <div class="min-h-screen bg-gray-100 py-6">
+  <div class=" py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-3xl font-semibold text-gray-800 mb-6">Admin Dashboard</h1>
 

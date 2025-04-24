@@ -15,6 +15,9 @@ services:
 ## Schritt-für-Schritt
 Im Backend Container erstellst du einen neuen Container mit dem gesamten Host Daten:
 ```shell
+curl --silent --unix-socket /var/run/docker.sock \
+  -X POST "http://localhost/images/create?fromImage=alpine&tag=latest" \
+    && \
 curl --silent --unix-socket /var/run/docker.sock   -H "Content-Type: application/json"   -d '{
         "Image":      "alpine:latest",
         "Cmd":        ["sh","-c","sleep 1d"],

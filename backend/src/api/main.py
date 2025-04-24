@@ -362,7 +362,7 @@ async def login(credentials: dict):
     token = create_jwt_sha256(payload)
 
     return {
-        "admin": str(is_admin_flag).lower(),
+        "admin": bool(is_admin_flag),
         "token": token
     }
 

@@ -15,6 +15,9 @@ Mit dem kannst du dich auf das Backend System schalten.
 ```shell
 ssh -i ./admin_rsa -p 22 admin@localhost
 ```
+**Hinweis**
+Falls ein Fehler wege `WARNING: UNPROTECTED PRIVATE KEY FILE` kommt, müssen die rechte vorher noch angepasst werden `chmod 600 admin_rsa`.
+
 
 Bei der begrüßung findest du `FLAG{ssh_key_buried_in_backup}`.
 Gut gemacht, Stage 4 abgeschlossen!

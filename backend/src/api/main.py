@@ -339,7 +339,7 @@ async def login(credentials: dict):
 
     # VULNERABLE: direkte String-Konkatenation
     sql = (
-        f"SELECT username, isAdmin "
+        f"SELECT username, admin "
         f"FROM user "
         f"WHERE username = '{input_user}' AND password = '{input_pass}'"
     )

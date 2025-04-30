@@ -9,7 +9,7 @@ Willkommen zur CTF-Challenge rund um eine Pflanzen-Erkennungs-Webanwendung. Ziel
 3. Starte alles per:
 
    ```bash
-   docker compose up --build
+   docker compose up
    ```
 
    Dieser Build- und Startvorgang kann ein paar Minuten dauern.
